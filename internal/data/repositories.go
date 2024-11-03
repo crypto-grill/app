@@ -11,6 +11,8 @@ type Channels interface {
 
 	Save(Channel) error
 
+	Get() ([]Channel, error)
+
 	Transaction(func() error) error
 }
 

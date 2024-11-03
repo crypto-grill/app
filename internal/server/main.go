@@ -53,6 +53,7 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 		),
 		middleware2.DefaultLogger,
 	)
+
 	r.Route("/", func(r chi.Router) {
 		r.Route("/channels", func(r chi.Router) {
 			r.Get("/", handler.GetChannels)
