@@ -47,12 +47,3 @@ jobs:
     uses: ./.github/workflows/containerization.yml
     with:
       tag: ${{ needs.semantic-release.outputs.tag }}
-
-  deployment:
-    needs: [containerization, semantic-release]
-    uses: ./.github/workflows/deployment.yml
-    with:
-      tag: ${{ needs.semantic-release.outputs.tag }}
-    secrets:
-      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
