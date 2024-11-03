@@ -1,0 +1,36 @@
+run:
+  concurrency: 4
+  tests: false
+
+linters-settings:
+  gocyclo:
+    min-complexity: 20
+  revive:
+    rules:
+      - name: var-naming
+        arguments:
+          - [] # AllowList
+          - [] # DenyList
+          - - skipPackageNameChecks: true
+  misspell:
+    locale: "US"
+
+linters:
+  disable-all: true
+  enable:
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - typecheck
+    - govet
+    - unused
+    - gosec
+    - unconvert
+    - gocyclo
+    - misspell
+    - unparam
+    - copyloopvar
+    - gocritic
+    - revive
+    - asciicheck
+    - bodyclose

@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16.3-alpine3.20 # Pin to specific version to omit pulling each time.
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: go-svc
+      POSTGRES_PASSWORD: go-svc
+      POSTGRES_DB: go-svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U go-svc -d go-svc"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+    ports:
+      - "80:80"
+    environment:
+      STORAGE_DSN: postgres://go-svc:go-svc@postgres:5432/go-svc?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

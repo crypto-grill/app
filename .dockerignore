@@ -1,0 +1,12 @@
+# Ignore all
+**/***
+
+# Reverse ignoring
+!internal/
+!pkg/
+!migrations/
+!scripts/
+!main.go
+!go.mod
+!go.sum
+!go.work

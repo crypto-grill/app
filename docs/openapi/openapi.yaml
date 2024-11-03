@@ -1,0 +1,9 @@
+openapi: 3.0.1
+info:
+  title: app
+  description: API
+  version: 0.1.0
+servers:
+  - url: http://localhost:80
+paths: {}
+components: {}

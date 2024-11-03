@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  semantic-release:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolver.outputs.tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic
+        with:
+          semantic_version: ^24.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve tag for containerization and deployment
+        id: resolver
+        # We cannot use steps.semantic.outputs.last_release_version because of the bug in action;
+        # See https://github.com/cycjimmy/semantic-release-action/issues/137 for details.
+        run: |
+          if [ "${{ steps.semantic.outputs.new_release_published }}" == "true" ]; then
+            tag="${{ steps.semantic.outputs.new_release_version }}"
+          else
+            tag="$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name | sed 's/^v//')"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+  containerization:
+    permissions:
+      contents: read
+      packages: write
+    needs: semantic-release
+    uses: ./.github/workflows/containerization.yml
+    with:
+      tag: ${{ needs.semantic-release.outputs.tag }}
+
+  deployment:
+    needs: [containerization, semantic-release]
+    uses: ./.github/workflows/deployment.yml
+    with:
+      tag: ${{ needs.semantic-release.outputs.tag }}
+    secrets:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
