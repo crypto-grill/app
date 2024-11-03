@@ -27,6 +27,8 @@ type SubscribedChannels interface {
 type Messages interface {
 	New() Messages
 
+	Save(Message) error
+
 	Transaction(func() error) error
 }
 

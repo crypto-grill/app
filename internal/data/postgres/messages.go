@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-
 	"github.com/crypto-grill/app/internal/data"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -10,7 +9,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-const messagesTable = "subscription_proof"
+const messagesTable = "message"
 
 type messages struct {
 	db            *sqlx.DB
@@ -28,6 +27,26 @@ func NewMessages(db *sqlx.DB) data.Messages {
 
 func (q *messages) New() data.Messages {
 	return NewMessages(q.db)
+}
+
+func (q *messages) Save(msg data.Message) error {
+	clauses := map[string]interface{}{
+		"id":         msg.ID,
+		"channel_id": msg.ChannelID,
+		"message":    msg.Message,
+		"created_at": msg.CreatedAt,
+	}
+	result := new(data.Message)
+
+	stmt := sq.Insert(messagesTable).SetMap(clauses).RunWith(q.db).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar)
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "failed to build SQL query")
+	}
+
+	err = q.db.Get(result, query, args...)
+
+	return errors.Wrap(err, "failed to execute insert query")
 }
 
 func (q *messages) Transaction(fn func() error) error {

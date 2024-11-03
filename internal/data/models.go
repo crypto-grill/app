@@ -25,16 +25,16 @@ type SubscribedChannel struct {
 }
 
 type Message struct {
-	ID        int64      `db:"id"`
-	ChannelID int64      `db:"channel_id"`
-	Message   string     `db:"message"`
-	CreatedAt *time.Time `db:"created_at"`
+	ID        int64     `db:"id"`
+	ChannelID int64     `db:"channel_id"`
+	Message   string    `db:"message"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 type SubscriptionProof struct {
-	ID        int64      `db:"id"`
-	ChannelID int64      `db:"channel_id"`
-	Signature string     `db:"signature"`
-	Message   string     `db:"message"`
-	CreatedAt *time.Time `db:"created_at"`
+	ID        int64     `db:"id"`
+	ChannelID int64     `db:"channel_id"`
+	Signature string    `db:"signature"`
+	Message   string    `db:"message"`
+	CreatedAt time.Time `db:"created_at"`
 }

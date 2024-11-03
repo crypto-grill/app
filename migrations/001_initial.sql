@@ -25,10 +25,11 @@ CREATE TABLE IF NOT EXISTS subscribed_channel (
 );
 
 CREATE TABLE IF NOT EXISTS message (
-  id BIGINT PRIMARY KEY,
+  id BIGINT NOT NULL,
   channel_id BIGINT REFERENCES channel (id) ON DELETE CASCADE,
   message VARCHAR(1024) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id, channel_id)
 );
 
 CREATE TABLE IF NOT EXISTS subscription_proof (

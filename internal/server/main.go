@@ -42,6 +42,12 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 	r.Use(
 		ape.CtxMiddleware(
 			ctx.SetUsers(postgres2.NewUsers(db)),
+			ctx.SetMessages(postgres2.NewMessages(db)),
+			ctx.SetSubscribedChannels(postgres2.NewSubscribedChannels(db)),
+			ctx.SetChannels(postgres2.NewChannels(db)),
+			ctx.SetSubscribers(postgres2.NewSubscribers(db)),
+			ctx.SetSubscriptionProofs(postgres2.NewSubscriptionProofs(db)),
+
 			ctx.SetConfig(cfg),
 		),
 		middleware2.DefaultLogger,
@@ -49,13 +55,15 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 	r.Route("/", func(r chi.Router) {
 		r.Route("/channels", func(r chi.Router) {
 			r.Get("/", handler.GetChannels)
+			r.Post("/add", handler.AddChannel)
+			r.Post("/create", handler.CreateChannels)
 			r.Post("/subscribe", handler.SubscribeToChannel)
 			r.Post("/subscribe/user", handler.SubscribeUser) // as sender
 		})
 		r.Route("/message", func(r chi.Router) {
 			r.Post("/receive", handler.ReceiveMessage)
 			r.Post("/send", handler.SendMessage)
-			r.Get("/retransmit", handler.RetransmitMessage)
+			r.Get("/retransmit", handler.RetransmitMessages)
 		})
 	})
 	return r, nil

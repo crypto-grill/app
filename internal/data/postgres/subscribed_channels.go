@@ -10,7 +10,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-const subscribedChannelsTable = "subscription_proof"
+const subscribedChannelsTable = "subscribed_channel"
 
 type subscribedChannels struct {
 	db            *sqlx.DB
