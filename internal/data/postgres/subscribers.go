@@ -30,6 +30,24 @@ func (q *subscribers) New() data.Subscribers {
 	return NewSubscribers(q.db)
 }
 
+func (q *subscribers) Save(subscriber data.Subscriber) error {
+	clauses := map[string]interface{}{
+		"user_id":    subscriber.UserID,
+		"channel_id": subscriber.ChannelID,
+	}
+	result := new(data.Subscriber)
+
+	stmt := sq.Insert(subscribersTable).SetMap(clauses).RunWith(q.db).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar)
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "failed to build SQL query")
+	}
+
+	err = q.db.Get(result, query, args...)
+
+	return errors.Wrap(err, "failed to execute insert query")
+}
+
 func (q *subscribers) Transaction(fn func() error) error {
 	tx, err := q.db.BeginTxx(context.Background(), nil)
 	if err != nil {

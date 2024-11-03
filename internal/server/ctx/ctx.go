@@ -2,8 +2,9 @@ package ctx
 
 import (
 	"context"
-	"github.com/crypto-grill/app/internal/data"
 	"net/http"
+
+	"github.com/crypto-grill/app/internal/data"
 
 	"github.com/crypto-grill/app/internal/config"
 )
@@ -18,6 +19,7 @@ const (
 	subscribedChannelsCtxKey
 	messagesCtxKey
 	subscriptionProofsCtxKey
+	secretKeyCtxKey
 )
 
 func SetConfig(cfg *config.Config) func(context.Context) context.Context {
@@ -88,4 +90,14 @@ func SetSubscriptionProofs(d data.SubscriptionProofs) func(context.Context) cont
 
 func SubscriptionProofs(r *http.Request) data.SubscriptionProofs {
 	return r.Context().Value(subscriptionProofsCtxKey).(data.SubscriptionProofs)
+}
+
+func SetSecretKey(secretKey string) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, secretKeyCtxKey, secretKey)
+	}
+}
+
+func SecretKey(r *http.Request) string {
+	return r.Context().Value(secretKeyCtxKey).(string)
 }

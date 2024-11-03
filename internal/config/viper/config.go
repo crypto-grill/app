@@ -2,6 +2,7 @@ package viper
 
 import (
 	"fmt"
+
 	"github.com/crypto-grill/app/internal/config"
 	"github.com/spf13/viper"
 )
@@ -12,6 +13,7 @@ func LoadConfig() (*config.Config, error) {
 	viper.AutomaticEnv()
 
 	_ = viper.BindEnv("Storage.Endpoint", "STORAGE_DSN")
+	_ = viper.BindEnv("Secret.Key", "SECRET_KEY")
 
 	if err := viper.Unmarshal(cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode environment into config struct: %w", err)

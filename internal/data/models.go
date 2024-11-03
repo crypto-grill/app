@@ -14,7 +14,6 @@ type Channel struct {
 }
 
 type Subscriber struct {
-	ID        int64 `db:"id"`
 	UserID    int64 `db:"user_id"`
 	ChannelID int64 `db:"channel_id"`
 }

@@ -49,6 +49,7 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 			ctx.SetSubscribers(postgres2.NewSubscribers(db)),
 			ctx.SetSubscriptionProofs(postgres2.NewSubscriptionProofs(db)),
 
+			ctx.SetSecretKey(cfg.Secret.Key),
 			ctx.SetConfig(cfg),
 		),
 		middleware2.DefaultLogger,

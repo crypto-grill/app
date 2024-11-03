@@ -14,9 +14,10 @@ CREATE TABLE IF NOT EXISTS channel (
 );
 
 CREATE TABLE IF NOT EXISTS subscriber (
-  id BIGINT PRIMARY KEY,
+  id SERIAL,
   user_id BIGINT REFERENCES user_ (id) ON DELETE CASCADE,
-  channel_id BIGINT REFERENCES channel (id) ON DELETE CASCADE
+  channel_id BIGINT REFERENCES channel (id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, channel_id)
 );
 
 CREATE TABLE IF NOT EXISTS subscribed_channel (

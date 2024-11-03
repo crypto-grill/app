@@ -21,9 +21,6 @@ func respondWithJSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 func GetChannels(w http.ResponseWriter, r *http.Request) {
-	// 1. Check record in local DB and return it if exists
-	// 2. GetChannels from other nodes if not and save to db
-
 	channels, err := ctx.Channels(r).New().Get()
 	if err != nil {
 		zap.S().Error(err)
@@ -37,6 +34,7 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO where can we find paths to other users?
+	// 2. GetChannels from other nodes if not and save to db
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -19,6 +19,8 @@ type Channels interface {
 type Subscribers interface {
 	New() Subscribers
 
+	Save(Subscriber) error
+
 	Transaction(func() error) error
 }
 

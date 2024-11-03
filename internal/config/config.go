@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/go-playground/validator/v10"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Config struct {
@@ -17,6 +18,9 @@ type Config struct {
 	}
 	Storage struct {
 		Endpoint string `validate:"required,url"`
+	}
+	Secret struct {
+		Key string `validate:"required"`
 	}
 }
 
