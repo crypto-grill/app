@@ -30,6 +30,26 @@ func (q *channels) New() data.Channels {
 	return NewChannels(q.db)
 }
 
+func (q *channels) Save(msg data.Channel) error {
+	clauses := map[string]interface{}{
+		"id":        msg.ID,
+		"sender_id": msg.SenderID,
+		"name":      msg.Name,
+	}
+
+	result := new(data.Channel)
+
+	stmt := sq.Insert(channelsTable).SetMap(clauses).RunWith(q.db).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar)
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "failed to build SQL query")
+	}
+
+	err = q.db.Get(result, query, args...)
+
+	return errors.Wrap(err, "failed to execute insert query")
+}
+
 func (q *channels) Transaction(fn func() error) error {
 	tx, err := q.db.BeginTxx(context.Background(), nil)
 	if err != nil {

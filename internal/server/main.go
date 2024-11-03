@@ -2,14 +2,15 @@ package server
 
 import (
 	"fmt"
+	"net"
+	"net/http"
+
 	postgres2 "github.com/crypto-grill/app/internal/data/postgres"
 	"github.com/crypto-grill/app/internal/infrastructure/postgres"
 	"github.com/crypto-grill/app/internal/server/ctx"
 	"github.com/crypto-grill/app/internal/server/handler"
 	"github.com/go-chi/chi"
 	middleware2 "github.com/go-chi/chi/v5/middleware"
-	"net"
-	"net/http"
 
 	"github.com/crypto-grill/app/internal/config"
 	"gitlab.com/distributed_lab/ape"

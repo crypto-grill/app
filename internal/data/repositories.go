@@ -9,6 +9,8 @@ type Users interface {
 type Channels interface {
 	New() Channels
 
+	Save(Channel) error
+
 	Transaction(func() error) error
 }
 
