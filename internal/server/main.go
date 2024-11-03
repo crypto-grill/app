@@ -2,8 +2,10 @@ package server
 
 import (
 	"fmt"
+	postgres2 "github.com/crypto-grill/app/internal/data/postgres"
 	"github.com/crypto-grill/app/internal/infrastructure/postgres"
 	"github.com/crypto-grill/app/internal/server/ctx"
+	"github.com/crypto-grill/app/internal/server/handler"
 	"github.com/go-chi/chi"
 	middleware2 "github.com/go-chi/chi/v5/middleware"
 	"net"
@@ -33,19 +35,28 @@ func Start(cfg *config.Config) error {
 func newRouter(cfg *config.Config) (chi.Router, error) {
 	r := chi.NewRouter()
 
-	_, err := postgres.New(cfg.Storage.Endpoint)
+	db, err := postgres.New(cfg.Storage.Endpoint)
 	if err != nil {
 		return nil, err
 	}
 	r.Use(
 		ape.CtxMiddleware(
-
+			ctx.SetUsers(postgres2.NewUsers(db)),
 			ctx.SetConfig(cfg),
 		),
 		middleware2.DefaultLogger,
 	)
 	r.Route("/", func(r chi.Router) {
-
+		r.Route("/channels", func(r chi.Router) {
+			r.Get("/", handler.GetChannels)
+			r.Post("/subscribe", handler.SubscribeToChannel)
+			r.Post("/subscribe/user", handler.SubscribeUser) // as sender
+		})
+		r.Route("/message", func(r chi.Router) {
+			r.Post("/receive", handler.ReceiveMessage)
+			r.Post("/send", handler.SendMessage)
+			r.Get("/retransmit", handler.RetransmitMessage)
+		})
 	})
 	return r, nil
 }

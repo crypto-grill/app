@@ -3,11 +3,13 @@ package cli
 import (
 	"github.com/crypto-grill/app/internal/config"
 	"github.com/crypto-grill/app/internal/config/viper"
+	"github.com/crypto-grill/app/internal/runner"
 	"github.com/crypto-grill/app/internal/server"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"log"
 )
 
 func Execute(args []string) error {
@@ -29,6 +31,12 @@ func Execute(args []string) error {
 		Use:   "serve",
 		Short: "Run HTTP server",
 		RunE: func(_ *cobra.Command, _ []string) error {
+			go func() {
+				if err := runner.SyncMessages(); err != nil {
+					log.Fatal(err)
+				}
+			}()
+
 			return server.Start(cfg)
 		},
 	}
