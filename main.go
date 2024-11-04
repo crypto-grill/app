@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/crypto-grill/app/internal/cli"
-	"go.uber.org/zap"
 	"log"
 	"os"
+
+	"github.com/crypto-grill/app/internal/cli"
+	"go.uber.org/zap"
 )
 
 func main() {

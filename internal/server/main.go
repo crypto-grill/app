@@ -2,10 +2,12 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 
 	"github.com/crypto-grill/app/internal/server/handler/incoming"
+	"github.com/libp2p/go-libp2p"
 
 	postgres2 "github.com/crypto-grill/app/internal/data/postgres"
 	"github.com/crypto-grill/app/internal/infrastructure/postgres"
@@ -42,6 +44,13 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	host, err := libp2p.New()
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Host created. ID:", host.ID())
+
 	r.Use(
 		ape.CtxMiddleware(
 			ctx.SetUsers(postgres2.NewUsers(db)),
@@ -52,6 +61,7 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 			ctx.SetSubscriptionProofs(postgres2.NewSubscriptionProofs(db)),
 
 			ctx.SetConfig(cfg),
+			ctx.SetHost(host),
 		),
 		middleware2.DefaultLogger,
 	)
