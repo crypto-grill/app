@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"log"
+
 	"github.com/crypto-grill/app/internal/config"
 	"github.com/crypto-grill/app/internal/config/viper"
 	"github.com/crypto-grill/app/internal/runner"
@@ -9,7 +11,6 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"log"
 )
 
 func Execute(args []string) error {

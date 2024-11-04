@@ -2,9 +2,10 @@ package request
 
 import (
 	"encoding/json"
-	"github.com/crypto-grill/app/internal/server/helpers"
 	"net/http"
 	"time"
+
+	"github.com/crypto-grill/app/internal/server/helpers"
 )
 
 type AddChannelRequest struct {

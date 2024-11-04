@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/crypto-grill/app/internal/server/ctx"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 func GetMessagesForSubscribedChannels(w http.ResponseWriter, r *http.Request) {

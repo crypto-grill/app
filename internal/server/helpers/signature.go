@@ -2,10 +2,11 @@ package helpers
 
 import (
 	"encoding/json"
-	"github.com/iden3/go-iden3-crypto/babyjub"
-	"github.com/iden3/go-iden3-crypto/utils"
 	"math/big"
 	"time"
+
+	"github.com/iden3/go-iden3-crypto/babyjub"
+	"github.com/iden3/go-iden3-crypto/utils"
 )
 
 type SignatureMessage struct {

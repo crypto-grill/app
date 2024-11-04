@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/crypto-grill/app/internal/data"
 	"github.com/crypto-grill/app/internal/server/ctx"
 	"github.com/crypto-grill/app/internal/server/helpers"
 	"github.com/crypto-grill/app/internal/server/request"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
 )
 
 func SendMessage(w http.ResponseWriter, r *http.Request) {

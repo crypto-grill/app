@@ -2,9 +2,10 @@ package server
 
 import (
 	"fmt"
-	"github.com/crypto-grill/app/internal/server/handler/incoming"
 	"net"
 	"net/http"
+
+	"github.com/crypto-grill/app/internal/server/handler/incoming"
 
 	postgres2 "github.com/crypto-grill/app/internal/data/postgres"
 	"github.com/crypto-grill/app/internal/infrastructure/postgres"

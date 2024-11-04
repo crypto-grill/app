@@ -44,8 +44,31 @@ func (q *subscribers) Save(subscriber data.Subscriber) error {
 	}
 
 	err = q.db.Get(result, query, args...)
-
 	return errors.Wrap(err, "failed to execute insert query")
+}
+
+func (q *subscribers) FilterByChannelID(channelID int64) data.Subscribers {
+	newSelectBuilder := q.selectBuilder.Where("channel_id = ?", channelID)
+	return &subscribers{
+		db:            q.db,
+		selectBuilder: newSelectBuilder,
+		deleteBuilder: q.deleteBuilder,
+	}
+}
+
+func (q *subscribers) Select() ([]data.Subscriber, error) {
+	stmt := sq.Select("*").From(subscribersTable).RunWith(q.db).PlaceholderFormat(sq.Dollar)
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build SQL query")
+	}
+
+	var subscribers []data.Subscriber
+	err = q.db.Select(&subscribers, query, args...)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to execute select query")
+	}
+	return subscribers, nil
 }
 
 func (q *subscribers) Transaction(fn func() error) error {

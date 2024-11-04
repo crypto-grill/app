@@ -30,6 +30,22 @@ func (q *subscribedChannels) New() data.SubscribedChannels {
 	return NewSubscribedChannels(q.db)
 }
 
+func (q *subscribedChannels) SelectChannelIDs() ([]int64, error) {
+	queryBuilder := q.selectBuilder.Columns("channel_id")
+	var channelIDs []int64
+
+	query, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build SQL query")
+	}
+
+	err = q.db.Select(&channelIDs, query, args...)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to execute select query")
+	}
+	return channelIDs, nil
+}
+
 func (q *subscribedChannels) Transaction(fn func() error) error {
 	tx, err := q.db.BeginTxx(context.Background(), nil)
 	if err != nil {

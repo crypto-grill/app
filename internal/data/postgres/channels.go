@@ -51,7 +51,7 @@ func (q *channels) Save(msg data.Channel) error {
 }
 
 func (q *channels) Select() ([]data.Channel, error) {
-	stmt := sq.Select("*").From("channel").RunWith(q.db).PlaceholderFormat(sq.Dollar)
+	stmt := sq.Select("*").From(channelsTable).RunWith(q.db).PlaceholderFormat(sq.Dollar)
 	query, args, err := stmt.ToSql()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build SQL query")
