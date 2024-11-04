@@ -21,6 +21,7 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Do not need for now
 	// TODO: reverse gossip transport protocol (RGTP)
 	// 2. GetChannels from other nodes if not and save to db
 }

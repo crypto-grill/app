@@ -5,8 +5,10 @@ import "time"
 type Users interface {
 	New() Users
 
+	Save(User) error
 	GetPubKeyForChannel(int64) (string, error)
-	GetIPsForChannels([]int64) ([]string, error)
+	GetIPsForChannels([]int64) ([]string, error) // get sender ips
+	GetIPsForSubsriber([]int64) ([]string, error)
 
 	Transaction(func() error) error
 }
@@ -15,6 +17,7 @@ type Channels interface {
 	New() Channels
 
 	Save(Channel) error
+	GetSender(channelID int64) (int64, error)
 	Select() ([]Channel, error)
 
 	Transaction(func() error) error
@@ -34,6 +37,7 @@ type Subscribers interface {
 type SubscribedChannels interface {
 	New() SubscribedChannels
 
+	Save(SubscribedChannel) error
 	SelectChannelIDs() ([]int64, error)
 
 	Transaction(func() error) error

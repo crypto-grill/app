@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS subscriber (
 );
 
 CREATE TABLE IF NOT EXISTS subscribed_channel (
-  id BIGINT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   channel_id BIGINT REFERENCES channel (id) ON DELETE CASCADE
 );
 

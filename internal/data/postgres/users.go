@@ -32,6 +32,24 @@ func (q *users) New() data.Users {
 	return NewUsers(q.db)
 }
 
+func (q *users) Save(user data.User) error {
+	clauses := map[string]interface{}{
+		"id":      user.ID,
+		"pub_key": user.PubKey,
+		"ip":      user.IP,
+	}
+	result := new(data.User)
+
+	stmt := sq.Insert(usersTable).SetMap(clauses).RunWith(q.db).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar)
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "failed to build SQL query")
+	}
+
+	err = q.db.Get(result, query, args...)
+	return errors.Wrap(err, "failed to execute insert query")
+}
+
 func (q *users) GetPubKeyForChannel(channelID int64) (string, error) {
 	var pubKey string
 	queryBuilder := q.selectBuilder.
@@ -67,6 +85,25 @@ func (q *users) GetIPsForChannels(channelIDs []int64) ([]string, error) {
 	err := q.db.Select(&ips, query, pq.Array(channelIDs))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get IPs for channels %v: %w", channelIDs, err)
+	}
+	return ips, nil
+}
+
+func (q *users) GetIPsForSubsriber(subscriberIDs []int64) ([]string, error) {
+	var ips []string
+
+	// Maybe we can do better
+	query := `
+		SELECT u.ip
+		FROM user_ u
+		JOIN subscriber s ON u.id = s.user_id
+		WHERE s.id = ANY($1)
+		ORDER BY array_position($1, s.id)
+	`
+
+	err := q.db.Select(&ips, query, pq.Array(subscriberIDs))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get IPs for channels %v: %w", subscriberIDs, err)
 	}
 	return ips, nil
 }

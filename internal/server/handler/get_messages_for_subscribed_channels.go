@@ -28,6 +28,8 @@ func GetMessagesForSubscribedChannels(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// No need for demo :D
 	/*
 		TODO:
 		1. Get latest message timestamp for each channel

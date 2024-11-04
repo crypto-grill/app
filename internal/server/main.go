@@ -42,6 +42,7 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	r.Use(
 		ape.CtxMiddleware(
 			ctx.SetUsers(postgres2.NewUsers(db)),
@@ -55,6 +56,8 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 		),
 		middleware2.DefaultLogger,
 	)
+
+	// TODO with request, handler and new root, but hardcoded...
 
 	r.Route("/", func(r chi.Router) {
 		r.Route("/channels", func(r chi.Router) {

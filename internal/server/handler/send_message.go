@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -37,6 +40,41 @@ func SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIDs := make([]int64, len(subscribers))
+	for i, subscriber := range subscribers {
+		userIDs[i] = subscriber.UserID
+	}
+
+	ips, err := ctx.Users(r).New().GetIPsForSubsriber(userIDs)
+	if err != nil {
+		zap.S().Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	for i := 0; i < len(ips); i++ {
+		url := ips[i] + "/message/receive"
+
+		jsonData, err := json.Marshal(msg)
+		if err != nil {
+			zap.S().Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			zap.S().Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer response.Body.Close()
+
+		// TODO maybe delete later (for now)
+		if response.StatusCode != http.StatusOK {
+			log.Fatalf("Received non-200 response: %d", response.StatusCode)
+		}
+	}
 	// 2. Run receive message for subscribers
-	panic(subscribers)
+	//panic(subscribers)
 }

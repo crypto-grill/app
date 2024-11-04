@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/crypto-grill/app/internal/config"
 	"github.com/crypto-grill/app/internal/server/helpers"
 
 	"github.com/crypto-grill/app/internal/data"
@@ -12,7 +16,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// CreateChannel is also an incoming handler
 func CreateChannel(w http.ResponseWriter, r *http.Request) {
 	req, err := request.NewCreateChannel(r)
 	if err != nil {
@@ -34,5 +37,30 @@ func CreateChannel(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 
-	// TODO: Gossip new channel
+	users := config.GetUsersWithoutPort(ctx.Config(r).Delivery.HTTP.BindPort)
+
+	for i := 0; i < len(users); i++ {
+		url := users[i] + "/channels/add"
+
+		jsonData, err := json.Marshal(channel)
+		if err != nil {
+			zap.S().Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			zap.S().Error(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer response.Body.Close()
+
+		// TODO maybe delete later (for now)
+		if response.StatusCode != http.StatusOK {
+			log.Fatalf("Received non-200 response: %d", response.StatusCode)
+		}
+	}
+	// TODO: Gossip new channel instead
 }
