@@ -5,7 +5,7 @@ SET
 CREATE TABLE IF NOT EXISTS user_ (
   id BIGINT PRIMARY KEY,
   pub_key VARCHAR(1024) NOT NULL,
-  ip VARCHAR(64) NOT NULL,
+  ip VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS channel (
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS subscription_proof (
   channel_id BIGINT REFERENCES channel (id) ON DELETE CASCADE,
   signature VARCHAR(1024) NOT NULL,
   message VARCHAR(1024) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  expires_at TIMESTAMP NOT NULL
 );
 
 -- migrate:down

@@ -39,11 +39,14 @@ func (q *subscriptionProofs) Unexpired() data.SubscriptionProofs {
 	}
 }
 
-/*
-func (q *subscriptionProofs) InChannels([]int64) data.SubscriptionProofs {
-	panic("plug")
+func (q *subscriptionProofs) InChannels(channelIDs []int64) data.SubscriptionProofs {
+	newSelectBuilder := q.selectBuilder.Where("channel_id = IN (?)", channelIDs)
+	return &subscriptionProofs{
+		db:            q.db,
+		selectBuilder: newSelectBuilder,
+		deleteBuilder: q.deleteBuilder,
+	}
 }
-*/
 
 func (q *subscriptionProofs) Select() ([]data.SubscriptionProof, error) {
 	stmt := sq.Select("*").From(subscriptionProofsTable).RunWith(q.db).PlaceholderFormat(sq.Dollar)

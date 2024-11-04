@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/crypto-grill/app/internal/data"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 
 	sq "github.com/Masterminds/squirrel"
@@ -28,6 +30,45 @@ func NewUsers(db *sqlx.DB) data.Users {
 
 func (q *users) New() data.Users {
 	return NewUsers(q.db)
+}
+
+func (q *users) GetPubKeyForChannel(channelID int64) (string, error) {
+	var pubKey string
+	queryBuilder := q.selectBuilder.
+		Columns("u.pub_key").
+		From("user_ u").
+		Join("channel c ON u.id = c.sender_id").
+		Where(sq.Eq{"c.id": channelID})
+
+	query, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return "", fmt.Errorf("failed to build SQL query: %w", err)
+	}
+
+	err = q.db.Get(&pubKey, query, args...)
+	if err != nil {
+		return "", fmt.Errorf("failed to get public key for channel %d: %w", channelID, err)
+	}
+	return pubKey, nil
+}
+
+func (q *users) GetIPsForChannels(channelIDs []int64) ([]string, error) {
+	var ips []string
+
+	// Maybe we can do better
+	query := `
+		SELECT u.ip
+		FROM user_ u
+		JOIN channel c ON u.id = c.sender_id
+		WHERE c.id = ANY($1)
+		ORDER BY array_position($1, c.id)
+	`
+
+	err := q.db.Select(&ips, query, pq.Array(channelIDs))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get IPs for channels %v: %w", channelIDs, err)
+	}
+	return ips, nil
 }
 
 func (q *users) Transaction(fn func() error) error {
