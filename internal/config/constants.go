@@ -1,23 +1,28 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
-// Hardcode other users, but can do with https://github.com/libp2p/go-libp2p
+// Hardcode other users
 const (
-	user1 = "http://localhost:8080"
-	user2 = "http://localhost:8081"
-	user3 = "http://localhost:8082"
-	user4 = "http://localhost:8083"
+	user1 = "http://server1:8080"
+	user2 = "http://server2:8081"
+	user3 = "http://server3:8082"
+	user4 = "http://server4:8083"
 )
 
 var users = []string{user1, user2, user3, user4}
 
+// GetUsersWithoutPort filters out users with a specific port
 func GetUsersWithoutPort(port uint) []string {
 	var filteredUsers []string
-	addressToExclude := fmt.Sprintf("http://localhost:%d", port)
+	portSuffix := fmt.Sprintf(":%d", port)
 
 	for _, user := range users {
-		if user != addressToExclude {
+		// Check if the URL ends with the given port suffix
+		if !strings.HasSuffix(user, portSuffix) {
 			filteredUsers = append(filteredUsers, user)
 		}
 	}

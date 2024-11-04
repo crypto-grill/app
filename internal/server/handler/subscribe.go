@@ -29,8 +29,6 @@ func Subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get sender id user for channel id
-
 	sender_ip, err := ctx.Users(r).New().GetIPsForChannels([]int64{req.ChannelID})
 	if err != nil {
 		zap.S().Error(err)

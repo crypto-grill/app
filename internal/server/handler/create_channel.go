@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -30,6 +31,9 @@ func CreateChannel(w http.ResponseWriter, r *http.Request) {
 		Name:      req.Name,
 		CreatedAt: &createdAt,
 	}
+
+	fmt.Printf("Received AddChannel request: ID=%d, SenderID=%d, Name=%s, Time=%s", channel.ID, channel.SenderID, channel.Name, channel.CreatedAt)
+
 	if err := ctx.Channels(r).New().Save(channel); err != nil {
 		zap.S().Error(err)
 		w.WriteHeader(http.StatusInternalServerError)

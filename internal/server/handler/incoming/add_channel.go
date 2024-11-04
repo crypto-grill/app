@@ -1,6 +1,7 @@
 package incoming
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/crypto-grill/app/internal/data"
@@ -16,12 +17,15 @@ func AddChannel(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("Received AddChannel request: ID=%d, SenderID=%d, Name=%s, Time", req.ID, req.SenderID, req.Name, req.CreatedAt)
+
 	channel := data.Channel{
 		ID:        req.ID,
 		SenderID:  req.SenderID,
 		Name:      req.Name,
 		CreatedAt: &req.CreatedAt,
 	}
+
 	if err := ctx.Channels(r).New().Save(channel); err != nil {
 		zap.S().Error(err)
 		w.WriteHeader(http.StatusInternalServerError)

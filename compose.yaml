@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres1:
     image: postgres:16.3-alpine3.20 # Pin to specific version to omit pulling each time.
     ports:
       - "5432:5432"
@@ -14,21 +14,109 @@ services:
       retries: 10
       start_period: 5s
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data1:/var/lib/postgresql/data
+  
+  postgres2:
+    image: postgres:16.3-alpine3.20 # Pin to specific version to omit pulling each time.
+    environment:
+      POSTGRES_USER: go-svc
+      POSTGRES_PASSWORD: go-svc
+      POSTGRES_DB: go-svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U go-svc -d go-svc"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data2:/var/lib/postgresql/data
+  
+  postgres3:
+    image: postgres:16.3-alpine3.20 # Pin to specific version to omit pulling each time.
+    environment:
+      POSTGRES_USER: go-svc
+      POSTGRES_PASSWORD: go-svc
+      POSTGRES_DB: go-svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U go-svc -d go-svc"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data3:/var/lib/postgresql/data
+
+  postgres4:
+    image: postgres:16.3-alpine3.20 # Pin to specific version to omit pulling each time.
+    environment:
+      POSTGRES_USER: go-svc
+      POSTGRES_PASSWORD: go-svc
+      POSTGRES_DB: go-svc
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U go-svc -d go-svc"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data4:/var/lib/postgresql/data
+      
 
   # 8081, 8082, 8083
-  server:
+  server1:
     build:
       context: .
     ports:
       - "8080:8080"
     environment:
-      STORAGE_DSN: postgres://go-svc:go-svc@postgres:5432/go-svc?sslmode=disable
+      STORAGE_DSN: postgres://go-svc:go-svc@postgres1:5432/go-svc?sslmode=disable
       SECRET_KEY: 48976081cad951815c4100805c5c193eff852808c32787c6a94feaa80a5331af
       PORT: 8080
     depends_on:
-      postgres:
+      postgres1:
+        condition: service_healthy
+
+  server2:
+    build:
+      context: .
+    ports:
+      - "8081:8081"
+    environment:
+      STORAGE_DSN: postgres://go-svc:go-svc@postgres2:5432/go-svc?sslmode=disable
+      SECRET_KEY: 58976081cad951815c4100805c5c193eff852808c32787c6a94feaa80a5331af
+      PORT: 8081
+    depends_on:
+      postgres2:
+        condition: service_healthy
+  
+  server3:
+    build:
+      context: .
+    ports:
+      - "8082:8082"
+    environment:
+      STORAGE_DSN: postgres://go-svc:go-svc@postgres3:5432/go-svc?sslmode=disable
+      SECRET_KEY: 68976081cad951815c4100805c5c193eff852808c32787c6a94feaa80a5331af
+      PORT: 8082
+    depends_on:
+      postgres3:
+        condition: service_healthy
+  
+  server4:
+    build:
+      context: .
+    ports:
+      - "8083:8083"
+    environment:
+      STORAGE_DSN: postgres://go-svc:go-svc@postgres4:5432/go-svc?sslmode=disable
+      SECRET_KEY: 78976081cad951815c4100805c5c193eff852808c32787c6a94feaa80a5331af
+      PORT: 8083
+    depends_on:
+      postgres4:
         condition: service_healthy
 
 volumes:
-  postgres-data:
+  postgres-data1:
+  postgres-data2:
+  postgres-data3:
+  postgres-data4:
