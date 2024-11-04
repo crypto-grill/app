@@ -1,7 +1,12 @@
 package data
 
+import "time"
+
 type Users interface {
 	New() Users
+
+	GetPubKeyForChannel(int64) (string, error)
+	GetIPsForChannels([]int64) ([]string, error)
 
 	Transaction(func() error) error
 }
@@ -10,8 +15,7 @@ type Channels interface {
 	New() Channels
 
 	Save(Channel) error
-
-	Get() ([]Channel, error)
+	Select() ([]Channel, error)
 
 	Transaction(func() error) error
 }
@@ -19,6 +23,9 @@ type Channels interface {
 type Subscribers interface {
 	New() Subscribers
 
+	FilterByChannelID(int64) Subscribers
+
+	Select() ([]Subscriber, error)
 	Save(Subscriber) error
 
 	Transaction(func() error) error
@@ -27,19 +34,30 @@ type Subscribers interface {
 type SubscribedChannels interface {
 	New() SubscribedChannels
 
+	SelectChannelIDs() ([]int64, error)
+
 	Transaction(func() error) error
 }
 
 type Messages interface {
 	New() Messages
 
+	InChannel(int64) Messages
+	After(time.Time) Messages
+
 	Save(Message) error
+	Select() ([]Message, error)
 
 	Transaction(func() error) error
 }
 
 type SubscriptionProofs interface {
 	New() SubscriptionProofs
+
+	Unexpired() SubscriptionProofs
+	InChannels([]int64) SubscriptionProofs
+
+	Select() ([]SubscriptionProof, error)
 
 	Transaction(func() error) error
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/crypto-grill/app/internal/server/handler/incoming"
 	"net"
 	"net/http"
 
@@ -49,7 +50,6 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 			ctx.SetSubscribers(postgres2.NewSubscribers(db)),
 			ctx.SetSubscriptionProofs(postgres2.NewSubscriptionProofs(db)),
 
-			ctx.SetSecretKey(cfg.Secret.Key),
 			ctx.SetConfig(cfg),
 		),
 		middleware2.DefaultLogger,
@@ -58,15 +58,15 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 	r.Route("/", func(r chi.Router) {
 		r.Route("/channels", func(r chi.Router) {
 			r.Get("/", handler.GetChannels)
-			r.Post("/add", handler.AddChannel)
-			r.Post("/create", handler.CreateChannels)
-			r.Post("/subscribe", handler.SubscribeToChannel)
-			r.Post("/subscribe/user", handler.SubscribeUser) // as sender
+			r.Post("/add", incoming.AddChannel)
+			r.Post("/create", handler.CreateChannel)
+			r.Post("/subscribe", handler.Subscribe)
+			r.Post("/subscribe/user", incoming.SubscribeUser) // as sender
 		})
 		r.Route("/message", func(r chi.Router) {
-			r.Post("/receive", handler.ReceiveMessage)
+			r.Post("/receive", incoming.ReceiveMessage)
 			r.Post("/send", handler.SendMessage)
-			r.Get("/retransmit", handler.RetransmitMessages)
+			r.Get("/retransmit", incoming.RetransmitMessages)
 		})
 	})
 	return r, nil

@@ -9,19 +9,17 @@ import (
 type Config struct {
 	Delivery struct {
 		HTTP struct {
-			BindPort       uint          `validate:"gte=1,lte=65535"` // between 1 and 65535
+			BindPort       uint          `validate:"gte=1,lte=65535"`
 			RequestTimeout time.Duration `validate:"gt=0"`
 		}
 	}
 	Log struct {
-		Level string `validate:"required,oneof=debug info warn error"` // allowed values: debug, info, warn, error
+		Level string `validate:"required,oneof=debug info warn error"`
 	}
 	Storage struct {
 		Endpoint string `validate:"required,url"`
 	}
-	Secret struct {
-		Key string `validate:"required"`
-	}
+	SecretKey string `validate:"required"`
 }
 
 func Default() *Config {

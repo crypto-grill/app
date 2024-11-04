@@ -5,36 +5,22 @@ import (
 	"net/http"
 
 	"github.com/crypto-grill/app/internal/server/ctx"
-	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
 	"go.uber.org/zap"
 )
 
-func respondWithJSON(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		zap.S().Error("Failed to encode JSON response: ", err)
-		errObjects := problems.BadRequest(err)
-		ape.RenderErr(w, errObjects...)
-	}
-}
-
 func GetChannels(w http.ResponseWriter, r *http.Request) {
-	channels, err := ctx.Channels(r).New().Get()
+	channels, err := ctx.Channels(r).New().Select()
 	if err != nil {
 		zap.S().Error(err)
-		errObjects := problems.BadRequest(err)
-		ape.RenderErr(w, errObjects...)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-
-	if len(channels) > 0 {
-		respondWithJSON(w, http.StatusOK, channels)
+	if err := json.NewEncoder(w).Encode(channels); err != nil {
+		zap.S().Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// TODO where can we find paths to other users?
+	// TODO: reverse gossip transport protocol (RGTP)
 	// 2. GetChannels from other nodes if not and save to db
-
-	w.WriteHeader(http.StatusOK)
 }
