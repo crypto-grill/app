@@ -23,6 +23,7 @@ services:
       - "80:80"
     environment:
       STORAGE_DSN: postgres://go-svc:go-svc@postgres:5432/go-svc?sslmode=disable
+      SECRET_KEY: 48976081cad951815c4100805c5c193eff852808c32787c6a94feaa80a5331af
     depends_on:
       postgres:
         condition: service_healthy
