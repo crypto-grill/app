@@ -1,17 +1,19 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 
+	"github.com/crypto-grill/app/internal/server/ctx"
 	"github.com/crypto-grill/app/internal/server/handler/incoming"
 	"github.com/libp2p/go-libp2p"
+	pubsub "github.com/libp2p/go-libp2p-pubsub"
 
 	postgres2 "github.com/crypto-grill/app/internal/data/postgres"
 	"github.com/crypto-grill/app/internal/infrastructure/postgres"
-	"github.com/crypto-grill/app/internal/server/ctx"
 	"github.com/crypto-grill/app/internal/server/handler"
 	"github.com/go-chi/chi"
 	middleware2 "github.com/go-chi/chi/v5/middleware"
@@ -45,11 +47,18 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 		return nil, err
 	}
 
+	ctx2 := context.Background()
 	host, err := libp2p.New()
+
 	if err != nil {
 		return nil, err
 	}
 	log.Println("Host created. ID:", host.ID())
+
+	pubsub, err := pubsub.NewGossipSub(ctx2, host)
+	if err != nil {
+		return nil, err
+	}
 
 	r.Use(
 		ape.CtxMiddleware(
@@ -62,6 +71,7 @@ func newRouter(cfg *config.Config) (chi.Router, error) {
 
 			ctx.SetConfig(cfg),
 			ctx.SetHost(host),
+			ctx.SetPubSub(pubsub),
 		),
 		middleware2.DefaultLogger,
 	)

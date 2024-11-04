@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/crypto-grill/app/internal/data"
+	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/libp2p/go-libp2p/core/host"
 
 	"github.com/crypto-grill/app/internal/config"
@@ -22,6 +23,7 @@ const (
 	messagesCtxKey
 	subscriptionProofsCtxKey
 	hostCtxKey
+	pubsubCtxKey
 )
 
 func SetConfig(cfg *config.Config) func(context.Context) context.Context {
@@ -42,6 +44,16 @@ func SetHost(h host.Host) func(context.Context) context.Context {
 
 func Host(r *http.Request) host.Host {
 	return r.Context().Value(hostCtxKey).(host.Host)
+}
+
+func SetPubSub(ps *pubsub.PubSub) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, pubsubCtxKey, ps)
+	}
+}
+
+func PubSub(r *http.Request) *pubsub.PubSub {
+	return r.Context().Value(pubsubCtxKey).(*pubsub.PubSub)
 }
 
 func SetUsers(d data.Users) func(context.Context) context.Context {
