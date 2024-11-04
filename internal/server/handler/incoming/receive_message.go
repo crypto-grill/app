@@ -1,6 +1,7 @@
 package incoming
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/crypto-grill/app/internal/data"
@@ -28,6 +29,13 @@ func ReceiveMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// channel name: message
+	name, err := ctx.Channels(r).New().GetName(msg.ChannelID)
+	if err != nil {
+		zap.S().Error(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("%s: %s\n", name, msg.Message)
 	w.WriteHeader(http.StatusNoContent)
 }

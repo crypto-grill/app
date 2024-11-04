@@ -17,6 +17,7 @@ type Channels interface {
 	New() Channels
 
 	Save(Channel) error
+	GetName(int64) (string, error)
 	GetSender(channelID int64) (int64, error)
 	Select() ([]Channel, error)
 

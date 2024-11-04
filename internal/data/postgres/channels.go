@@ -50,6 +50,22 @@ func (q *channels) Save(msg data.Channel) error {
 	return errors.Wrap(err, "failed to execute insert query")
 }
 
+func (q *channels) GetName(channelID int64) (string, error) {
+	stmt := sq.Select("name").From("channel").Where(sq.Eq{"id": channelID}).RunWith(q.db).PlaceholderFormat(sq.Dollar)
+
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return "", errors.New("failed to build SQL query")
+	}
+
+	var name string
+	err = q.db.Get(&name, query, args...)
+	if err != nil {
+		return "", errors.New("failed to execute query")
+	}
+	return name, nil
+}
+
 func (q *channels) GetSender(channelID int64) (int64, error) {
 	stmt := sq.Select("*").From("channel").Where(sq.Eq{"id": channelID}).RunWith(q.db).PlaceholderFormat(sq.Dollar)
 
