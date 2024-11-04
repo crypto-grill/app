@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -32,7 +31,7 @@ func CreateChannel(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: &createdAt,
 	}
 
-	fmt.Printf("Received AddChannel request: ID=%d, SenderID=%d, Name=%s, Time=%s", channel.ID, channel.SenderID, channel.Name, channel.CreatedAt)
+	//fmt.Printf("Received AddChannel request: ID=%d, SenderID=%d, Name=%s, Time=%s", channel.ID, channel.SenderID, channel.Name, channel.CreatedAt)
 
 	if err := ctx.Channels(r).New().Save(channel); err != nil {
 		zap.S().Error(err)
@@ -52,6 +51,8 @@ func CreateChannel(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+
+		//fmt.Print(jsonData)
 
 		response, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
